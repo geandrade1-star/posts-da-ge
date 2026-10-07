@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Posts da Ge</title>
+<meta name="theme-color" content="#8f6ad6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Posts">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<style>
+:root { --bg:#f8f5fd; --card:#fff; --ink:#2a2433; --muted:#857b93; --line:#e9e2f5; --accent:#8f6ad6; --soft:#efe8fb;
+        --ok:#2f9e6e; --oksoft:#dff5ea; --amber:#c98a1b; --ambersoft:#fdf1dc; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#17141c; --card:#221d29; --ink:#f3eefa; --muted:#ab9fbc; --line:#352d40; --accent:#b495f0; --soft:#2f2640;
+          --ok:#5bd39b; --oksoft:#1d3a2c; --amber:#f0b54a; --ambersoft:#3b2e17; }
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+header { position:sticky; top:0; z-index:5; background:var(--bg); padding:calc(env(safe-area-inset-top) + 14px) 16px 8px; border-bottom:1px solid var(--line); }
+h1 { margin:0; font-size:24px; }
+.resumo { display:flex; gap:6px; margin:8px 0 2px; overflow-x:auto; scrollbar-width:none; }
+.resumo::-webkit-scrollbar { display:none; }
+.pill { flex:none; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:5px 10px; font-size:13px; font-weight:600; }
+.pill b { color:var(--accent); }
+.chips { display:flex; gap:8px; overflow-x:auto; padding:8px 0 2px; scrollbar-width:none; }
+.chips::-webkit-scrollbar { display:none; }
+.chip { flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink); padding:8px 14px; border-radius:999px; font:600 15px/1 inherit; }
+.chip[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+main { padding:6px 16px calc(env(safe-area-inset-bottom) + 90px); max-width:720px; margin:0 auto; }
+h2 { font-size:18px; margin:24px 4px 8px; display:flex; align-items:center; gap:8px; }
+h2 small { color:var(--muted); font-weight:500; font-size:14px; }
+.nota { color:var(--muted); font-size:14px; margin:-4px 4px 10px; }
+.legendas { margin:0 0 10px; display:flex; flex-direction:column; gap:6px; }
+.copia { text-align:left; border:1px dashed var(--accent); background:var(--soft); color:var(--ink); border-radius:12px; padding:8px 11px; font:14px/1.35 inherit; white-space:pre-wrap; word-break:break-word; }
+.copia::before { content:"📋 "; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:18px; margin:0 0 10px; overflow:hidden; }
+.card.gravado { border-color:var(--amber); }
+.card.postado { opacity:.6; }
+.topo { display:flex; align-items:center; gap:10px; padding:14px 14px 10px; cursor:pointer; }
+.topo .t { flex:1; font-weight:700; }
+.topo .s { display:block; color:var(--muted); font-weight:500; font-size:13px; margin-top:2px; }
+.seta { color:var(--muted); transition:.2s; }
+.card.aberto .seta { transform:rotate(90deg); }
+.botoes { display:flex; gap:8px; padding:0 14px 14px; }
+.botoes button { flex:1; border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:12px; padding:10px 6px; font:600 15px/1 inherit; }
+.botoes button.on.g { background:var(--ambersoft); border-color:var(--amber); color:var(--amber); }
+.botoes button.on.p { background:var(--oksoft); border-color:var(--ok); color:var(--ok); }
+.conteudo { display:none; padding:0 14px 12px; border-top:1px solid var(--line); font-size:15px; }
+.card.aberto .conteudo { display:block; }
+.conteudo table { width:100%; border-collapse:collapse; font-size:13.5px; margin:8px 0; }
+.conteudo th, .conteudo td { border-bottom:1px solid var(--line); padding:6px 4px; text-align:left; vertical-align:top; }
+.conteudo code { background:var(--soft); color:var(--ink); border-radius:8px; padding:2px 7px; font:14px/1.4 inherit; cursor:pointer; }
+.conteudo code::after { content:" 📋"; font-size:12px; }
+.conteudo ul, .conteudo ol { padding-left:20px; margin:6px 0; }
+.conteudo h3 { font-size:15px; margin:12px 0 4px; }
+.montar { background:var(--soft); border-radius:12px; padding:9px 11px; font-size:14px; margin-top:8px; }
+details.info { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:12px 14px; margin:12px 0 0; font-size:15px; }
+details.info summary { font-weight:700; cursor:pointer; }
+.vazio { text-align:center; color:var(--muted); padding:36px 8px; }
+footer { text-align:center; color:var(--muted); font-size:13px; margin-top:24px; }
+footer button { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:8px 14px; margin:4px; font:600 14px/1 inherit; }
+#toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 22px); transform:translateX(-50%) translateY(30px); background:var(--ok); color:#fff; font-weight:700; padding:12px 20px; border-radius:999px; opacity:0; transition:.25s; pointer-events:none; }
+#toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Posts da Ge 🎥</h1>
+  <div class="resumo" id="resumo"></div>
+  <div class="chips" id="abas"></div>
+  <div class="chips" id="formatos"></div>
+</header>
+<main id="lista"></main>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+const DADOS = {"info": "## 🗓️ Divisão pra poupar as mãos\n- **SÁBADO, no fundo infinito, com o flash colorido:** todos os vídeos de ⚡ **cortes no ritmo** (você grava, eu monto). A montagem fica igual, só muda o produto.\n- **DOMINGO, na mesa com luz quente:** todos os vídeos de 🕯️ **ASMR calminho** (1 take cada, sem edição).\n\n**Lembretes:**\n- ⚡ **Cortes no ritmo:** cada take tem **~5 s**, grave **na ordem**, salve em `MONTAR/<produto>` e me fale \"monta o …\". O ⏱️ é quanto o take dura no vídeo pronto.\n- 🕯️ **ASMR:** é **1 take contínuo de 10 a 15 s**, com o microfone pertinho, sem fala, e a música suave entra no TikTok.\n- ☑️ **Antes de gravar:** confira o **\"Ganhe R$ X por venda\"** de cada anúncio.\n\n---\n\n\n## 🎯 O seu jeito: o produto em vários ângulos e distâncias (Ge, 07/10)\nSuper close, de lado, de frente, a sola, de longe e de perto. A regra do tempo fica simples:\n- 🔍 **Quanto mais PERTO, mais RÁPIDO:** super close e textura = **0,6 a 1 s**.\n- 🖼️ **Quanto mais LONGE, mais TEMPO:** produto inteiro e cena aberta = **2 a 3 s**.\n- ✋ **Quando tem movimento, segura até ele terminar:** virar pra mostrar a sola, abrir, borrifar = **2,5 a 4 s**.\n\n\n## 🙌 Quem faz o quê\n- 🎥 **Você:** grava cada take com **uns 5 segundos** e o celular parado no tripé. Pode também ser foto.\n- ✂️ **Eu:** monto tudo: o trailer de abertura, o tempo certo de cada cena e o vídeo final em 1080×1920. **Você não edita nada.**\n- 🎵 **Você:** põe a música viral no TikTok na hora de postar. O vídeo sai sem som.\n\n\n## 📲 Como me mandar os takes\n1. Grave **na ordem do cartão**. O iPhone numera os arquivos, e eu monto nessa ordem.\n2. No app **Fotos**, selecione os takes e toque em **Compartilhar** → **Salvar em Arquivos**.\n3. Vá em **iCloud Drive → FOTOS DIA → CONTA VENDAS 2 → MONTAR** e crie uma pasta com o nome do produto (ex.: `bolsa tote preta`).\n4. Me escreva **\"monta a bolsa tote preta\"**. Em ~1 minuto, o vídeo `MONTADO_…mp4` aparece na mesma pasta.\n\n\n## 💡 Luz e fundo\n- **Fundo infinito branco:** pra produto escuro (bolsa preta, sapato preto).\n- **Fundo infinito preto:** pra frasco, perfume, transparente e brilho. Com a luz colorida **atrás** do produto, o contorno acende.\n- **Troque a cor do flash a cada take.**\n\n---\n", "produtos": [{"id": "goco", "emoji": "💻", "nome": "Bolsa notebook GOCO", "pasta": "goco", "cards": [{"id": "goco-cortes-no-ritmo-fundo-infinito-do-contr", "titulo": "⚡ Cortes no ritmo · fundo infinito do contraste (bolsa escura → fundo branco · bolsa clara → fundo preto)", "sub": "", "formato": "cortes", "md": "| # | take | luz | ⏱️ |\n|---|---|---|---|\n| 1 | De longe: a bolsa em pé no centro | branca | 2,5 s |\n| 2 | Super close no zíper | rosa | 0,7 s ⚡ |\n| 3 | A mão abre o zíper devagar | azul | 2,4 s |\n| 4 | O notebook desliza pra dentro | âmbar | 3,0 s 🐢 |\n| 5 | Close na alça ou costura | lilás | 0,8 s ⚡ |\n| 6 | De lado, mostrando a espessura | branca | 1,3 s |\n| 7 | Celular ou carregador entrando no bolso | rosa | 2,0 s |\n| 8 | Final de longe, com outra cor de luz | vermelha | 2,5 s |\n\n✂️ Ritmo: `2.5,0.7,2.4,3,0.8,1.3,2,2.5` · 📺 Texto: `meu notebook mora aqui agora 💻✨` (⚠️ confira se o seu notebook cabe direitinho)"}, {"id": "goco-asmr-mesa-com-linho-cru-e-led-mbar", "titulo": "🕯️ ASMR · mesa com linho cru e LED âmbar", "sub": "", "formato": "asmr", "md": "- 📷 **Câmera:** de cima.\n- ✋ **Movimento:** a mão abre o zíper inteiro (o som!), o notebook entra devagar e o zíper fecha.\n- 📺 **Texto:** `o barulhinho do zíper 🎧`\n\n---"}], "legendas": [], "nota": ""}, {"id": "ursinho", "emoji": "🐻", "nome": "Copo de vidro ursinho", "pasta": "ursinho", "cards": [{"id": "ursinho-asmr-linho-rosa-antigo-e-luz-quente", "titulo": "🕯️ ASMR · linho rosa antigo e luz quente", "sub": "", "formato": "asmr", "md": "- 📷 **Câmera:** 45°, bem perto do copo.\n- ✋ **Movimento:**\n  1. Cubos de gelo caem um por um, com o tlin do vidro.\n  2. Você serve o suco ou leite rosa devagar.\n  3. Fecha a tampa.\n  4. Dá 2 batidinhas de unha na barriguinha do urso.\n- 📺 **Texto:** `o copo mais fofo que eu já tive 🐻🧃`"}, {"id": "ursinho-cortes-no-ritmo-presente-de-natal-fundo", "titulo": "⚡ Cortes no ritmo · \"presente de Natal\" · fundo infinito branco", "sub": "", "formato": "cortes", "md": "| # | take | luz | ⏱️ |\n|---|---|---|---|\n| 1 | De longe: o copo vazio no centro | branca | 2,0 s |\n| 2 | Super close no rostinho do urso | rosa | 0,7 s ⚡ |\n| 3 | Bombons caindo dentro | âmbar | 3,0 s 🐢 |\n| 4 | A tampa entrando | verde | 1,5 s |\n| 5 | O copo com um laço já pronto ao lado | vermelha | 1,3 s |\n| 6 | Close nos bombons pelo vidro | branca | 0,6 s ⚡ |\n| 7 | A mão gira o copo devagar | verde | 2,4 s |\n| 8 | Final de longe, com luz vermelha e verde | vermelha | 2,5 s |\n\n✂️ Ritmo: `2,0.7,3,1.5,1.3,0.6,2.4,2.5` · 📺 Texto: `presente de Natal resolvido 🎁🐻`\n\n---"}], "legendas": [], "nota": ""}, {"id": "corrente", "emoji": "⛓️", "nome": "Bolsa de alça de corrente", "pasta": "bolsa corrente", "cards": [{"id": "corrente-asmr-cetim-prata-perolado-e-led-mbar", "titulo": "🕯️ ASMR · cetim prata perolado e LED âmbar", "sub": "", "formato": "asmr", "md": "- 📷 **Câmera:** de cima e bem perto.\n- ✋ **Movimento:** a mão levanta a corrente e deixa ela cair devagar no cetim, elo por elo. Faz isso 2 vezes.\n- 📺 **Texto:** `ouve essa corrente ✨`"}, {"id": "corrente-cortes-no-ritmo-fundo-infinito-preto-a", "titulo": "⚡ Cortes no ritmo · fundo infinito PRETO (a corrente brilha com a luz colorida)", "sub": "", "formato": "cortes", "md": "| # | take | luz | ⏱️ |\n|---|---|---|---|\n| 1 | De longe: a bolsa no centro | rosa | 2,5 s |\n| 2 | Super close na corrente | azul | 0,7 s ⚡ |\n| 3 | A mão levanta pela corrente, e a bolsa balança | âmbar | 2,4 s |\n| 4 | A mão abre o fecho | lilás | 1,8 s |\n| 5 | Close no fecho | branca | 0,6 s ⚡ |\n| 6 | Batom e chave entrando | rosa | 2,5 s 🐢 |\n| 7 | De lado | verde | 1,3 s |\n| 8 | Final de longe | vermelha | 2,5 s |\n\n✂️ Ritmo: `2.5,0.7,2.4,1.8,0.6,2.5,1.3,2.5` · 📺 Texto: `a bolsa que brilha 🖤⛓️`\n\n---"}], "legendas": [], "nota": ""}, {"id": "necessaire", "emoji": "☁️", "nome": "Necessaire Puffer Gocase", "pasta": "necessaire", "cards": [{"id": "necessaire-cortes-no-ritmo-fundo-infinito-branco", "titulo": "⚡ Cortes no ritmo · fundo infinito BRANCO", "sub": "", "formato": "cortes", "md": "| # | take | luz | ⏱️ |\n|---|---|---|---|\n| 1 | De longe: a necessaire no centro | branca | 2,5 s |\n| 2 | Super close no fofinho do puffer | rosa | 0,7 s ⚡ |\n| 3 | A ponta do dedo afunda de leve no fofinho (sem apertar) | lilás | 1,5 s |\n| 4 | A mão abre o zíper devagar | azul | 2,4 s |\n| 5 | Coisinhas entrando: batom, mini perfume, pente | âmbar | 3,0 s 🐢 |\n| 6 | Close no puxador do zíper | branca | 0,6 s ⚡ |\n| 7 | De lado, mostrando como ela é fofinha | rosa | 1,3 s |\n| 8 | Final de longe, com outra cor de luz | vermelha | 2,5 s |\n\n✂️ Ritmo: `2.5,0.7,1.5,2.4,3,0.6,1.3,2.5` · 📺 Texto: `a necessaire mais fofinha 🖤☁️`"}, {"id": "necessaire-asmr-linho-rosa-antigo-e-luz-quente", "titulo": "🕯️ ASMR · linho rosa antigo e luz quente", "sub": "", "formato": "asmr", "md": "- 📷 **Câmera:** de cima.\n- ✋ **Movimento:**\n  1. As unhas fazem um tamborzinho leve no puffer (um som abafado gostoso).\n  2. Abre o zíper devagar.\n  3. Coloca 3 coisinhas dentro.\n  4. Fecha o zíper.\n- 📺 **Texto:** `o barulhinho do fofinho 🎧`\n\n---"}], "legendas": [], "nota": "📈 **Por que agora:** o gráfico está bom e tem poucos criadores fazendo (Ge, 07/10). É melhor entrar antes de lotar."}, {"id": "tresse", "emoji": "🖤", "nome": "Bolsa baú de tressê", "pasta": "bolsa tresse", "cards": [{"id": "tresse-asmr-linho-cru-e-luz-quente", "titulo": "🕯️ ASMR · linho cru e luz quente", "sub": "", "formato": "asmr", "md": "- 📷 **Câmera:** bem perto da trama.\n- ✋ **Movimento:**\n  1. A unha percorre o trançado devagar (um som texturizado lindo).\n  2. Abre o zíper do baú.\n  3. Mostra o espacinho de dentro.\n- 📺 **Texto:** `a trama mais linda 🖤`"}, {"id": "tresse-cortes-no-ritmo-fundo-infinito-branco", "titulo": "⚡ Cortes no ritmo · fundo infinito BRANCO", "sub": "", "formato": "cortes", "md": "| # | take (~5 s cada) | luz | ⏱️ no vídeo |\n|---|---|---|---|\n| 1 | A bolsa **entra no quadro**: a mão solta ela de leve, de cima | branca | 2,5 s |\n| 2 | **Close na trama**, câmera bem pertinho | rosa | 1,2 s ⚡ |\n| 3 | A mão **abre** a bolsa | azul | 1,8 s |\n| 4 | Coisas **caindo dentro**: necessaire, carteira, óculos | branca | 3,5 s 🐢 |\n| 5 | A mão **levanta pela alça**, e a bolsa balança | âmbar | 2,4 s |\n| 6 | A bolsa **de perfil**, mostrando o formato | lilás | 0,7 s ⚡ |\n| 7 | **Detalhe de dentro** (forro ou bolso) | branca | 1,3 s ⚡ |\n| 8 | **Final:** a bolsa parada no centro, de frente | vermelha | 2,5 s |\n\n✂️ Ritmo pra mim: `2.5,1.2,1.8,3.5,2.4,0.7,1.3,2.5` (+ o trailer de abertura)\n📺 **Texto na tela** (no 1º corte): `a bolsa que combina com tudo 🖤`\n📝 **Legenda:** ⏳ falta o nome do anúncio.\n\n---"}], "legendas": [], "nota": ""}, {"id": "mule", "emoji": "👡", "nome": "Mule", "pasta": "mule", "cards": [{"id": "mule-a1-revela-o", "titulo": "🕯️ A1 · Revelação 🟢", "sub": "🅰️ FUNDO A — LINHO CRU · mule preto", "formato": "asmr", "md": "- 🎨 **Cena:** linho cru esticado na mesa, com uma vela acesa e um livro fechado no canto de cima.\n- 📷 **Câmera:** de cima.\n- ✋ **Movimento:**\n  1. O mule preto começa coberto por um retalho do próprio linho.\n  2. A mão entra por baixo e puxa o pano devagar.\n  3. Dá duas batidinhas de unha no bico.\n  4. A mão sai.\n- 🎙️ **Som:** o pano deslizando, depois o tec-tec da unha.\n- 📺 **Texto na tela:** `achei o mule do meu verão 🖤☀️`\n- ☐ gravado · ☐ postado"}, {"id": "mule-a2-textura-com-som", "titulo": "🕯️ A2 · Textura com som 🟢", "sub": "🅰️ FUNDO A — LINHO CRU · mule preto", "formato": "asmr", "md": "- 🎨 **Cena:** o mesmo linho cru, sem a vela, com uma fita ou laço claro ao lado do mule.\n- 📷 **Câmera:** baixa e de lado (45°), na altura da mesa, mostrando a sola tratorada.\n- ✋ **Movimento:**\n  1. A unha percorre as ranhuras da sola, de trás pra frente.\n  2. Depois dá 3 batidinhas no salto.\n- 🎙️ **Som:** trrrr nas ranhuras + toc-toc-toc.\n- 📺 **Texto na tela:** `ouve essa sola 🎧🖤`\n- ☐ gravado · ☐ postado"}, {"id": "mule-a3-look-de-ver-o", "titulo": "🕯️ A3 · Look de verão 🟡", "sub": "🅰️ FUNDO A — LINHO CRU · mule preto", "formato": "asmr", "md": "- 🎨 **Cena:** linho cru com o mule preto e a sua bolsa trançada preta arrumados juntos, e uma flor solta.\n- 📷 **Câmera:** de cima.\n- ✋ **Movimento:**\n  1. A mão ajeita a alça da bolsa.\n  2. Desliza o dedo pelo couro do mule, do calcanhar ao bico.\n- 🎙️ **Som:** o trançado da bolsa + o dedo no mule.\n- 📺 **Texto na tela:** `combinou demais com a minha bolsa 👜🖤`\n- ☐ gravado · ☐ postado\n\n---"}, {"id": "mule-b1-detalhe-na-m-o", "titulo": "🕯️ B1 · Detalhe na mão 🟢", "sub": "🅱️ FUNDO B — LINHO BORDÔ · mule nude e mule off white", "formato": "asmr", "md": "- 🎨 **Cena:** linho bordô com uma xícara ou uma vela, e o abajur aceso fazendo luz quente de lado.\n- 📷 **Câmera:** 45°.\n- ✋ **Movimento:**\n  1. A mão segura o mule nude de leve, pelo calcanhar.\n  2. Vira devagar pra mostrar a sola e volta pro lugar.\n  3. A unha desliza na palmilha.\n- 🎙️ **Som:** a unha na palmilha.\n- 📺 **Texto na tela:** `essa cor combina com tudo ✨`\n- ☐ gravado · ☐ postado"}, {"id": "mule-b2-textura-com-som", "titulo": "🕯️ B2 · Textura com som 🟢", "sub": "🅱️ FUNDO B — LINHO BORDÔ · mule nude e mule off white", "formato": "asmr", "md": "- 🎨 **Cena:** linho bordô com uma flor seca ou um galhinho, e o mule nude parado.\n- 📷 **Câmera:** de cima.\n- ✋ **Movimento:**\n  1. As unhas fazem um tamborzinho leve no couro de cima do mule.\n  2. Depois deslizam até o bico.\n- 🎙️ **Som:** tap-tap-tap.\n- 📺 **Texto na tela:** `o barulhinho mais gostoso 🎧`\n- ☐ gravado · ☐ postado"}, {"id": "mule-b3-revela-o-com-cetim", "titulo": "🕯️ B3 · Revelação com cetim 🟢", "sub": "🅱️ FUNDO B — LINHO BORDÔ · mule nude e mule off white", "formato": "asmr", "md": "- 🎨 **Cena:** linho bordô, com o mule off white coberto por um retalho do **cetim prata perolado**.\n- 📷 **Câmera:** de cima.\n- ✋ **Movimento:**\n  1. A mão puxa o cetim devagar, que escorrega revelando o off white no bordô.\n  2. Uma batidinha de unha no couro.\n- 🎙️ **Som:** o cetim deslizando (fica lindo no microfone).\n- 📺 **Texto na tela:** `o mais delicadinho dos três 🤍`\n- ☐ gravado · ☐ postado\n\n---"}, {"id": "mule-c1-cal-ar-e-2-passinhos", "titulo": "🕯️ C1 · Calçar e 2 passinhos 🟡", "sub": "🅲 FUNDO C — LINHO VERDE NO CHÃO · mule off white", "formato": "asmr", "md": "- 🎨 **Cena:** linho verde no chão.\n- 📷 **Câmera:** de cima, apontada pros pés (tripé alto), com as unhas dos pés feitas.\n- ✋ **Movimento:**\n  1. O pé entra no mule off white.\n  2. Dá 2 passinhos devagar no linho e para.\n- 🎙️ **Som:** o passo abafado no linho.\n- 📺 **Texto na tela:** `macio desde o primeiro passo 🤍`\n- ☐ gravado · ☐ postado"}, {"id": "mule-c2-detalhe-na-m-o", "titulo": "🕯️ C2 · Detalhe na mão 🟢", "sub": "🅲 FUNDO C — LINHO VERDE NO CHÃO · mule off white", "formato": "asmr", "md": "- 🎨 **Cena:** o mesmo linho verde no chão, com o mule de perfil e um vasinho de planta ao lado.\n- 📷 **Câmera:** de lado, bem baixa.\n- ✋ **Movimento:**\n  1. A unha contorna a costura da borda.\n  2. Depois mostra o calcanhar aberto.\n- 🎙️ **Som:** a unha na costura.\n- 📺 **Texto na tela:** `acabamento caprichado 🤍✨`\n- ☐ gravado · ☐ postado\n\n---"}, {"id": "mule-d1-as-3-cores", "titulo": "🕯️ D1 · As 3 cores 🟢", "sub": "🅳 FUNDO D — CETIM PRATA PEROLADO · os 3 juntos", "formato": "asmr", "md": "- 🎨 **Cena:** os 3 mules lado a lado (preto, nude, off white), com o LED âmbar refletindo no cetim.\n- 📷 **Câmera:** de cima.\n- ✋ **Movimento:** a mão passa por cima e toca cada um com a unha: tic, tic, tic.\n- 🎙️ **Som:** os 3 tics + o cetim.\n- 📺 **Texto na tela:** `qual você levaria? 🖤🤎🤍`\n- ☐ gravado · ☐ postado"}, {"id": "mule-d2-um-por-um", "titulo": "🕯️ D2 · Um por um 🟡", "sub": "🅳 FUNDO D — CETIM PRATA PEROLADO · os 3 juntos", "formato": "asmr", "md": "- 🎨 **Cena:** o mesmo cetim, agora com uma vela acesa.\n- 📷 **Câmera:** 45°.\n- ✋ **Movimento:** a mão coloca os mules na cena, um de cada vez, devagar: preto, nude e off white.\n- 🎙️ **Som:** o \"tum\" macio de cada mule no cetim.\n- 📺 **Texto na tela:** `não consegui escolher um só 🛍️`\n- ☐ gravado · ☐ postado\n\n---"}, {"id": "mule-sapato-em-ngulos", "titulo": "⚡ Sapato em ângulos", "sub": "", "formato": "cortes", "md": "| # | take (~5 s cada) | luz | ⏱️ no vídeo |\n|---|---|---|---|\n| 1 | **De longe:** o par inteiro no centro do fundo infinito | branca | 2,5 s |\n| 2 | **Super close no bico** | rosa | 0,7 s ⚡ |\n| 3 | **De lado (perfil):** o formato e a altura da sola | azul | 1,3 s |\n| 4 | **De frente**, na altura do chão | âmbar | 1,3 s |\n| 5 | A mão **vira um pé devagar pra mostrar a sola** | lilás | 2,8 s 🐢 |\n| 6 | **Super close na textura** (couro, costura, ranhuras) | branca | 0,6 s ⚡ |\n| 7 | **De perto:** o par a meio metro, câmera de cima | vermelha | 1,5 s |\n| 8 | **Final de longe:** o par de novo, com outra cor de luz | rosa | 3,0 s |\n\n✂️ Ritmo pra mim: `2.5,0.7,1.3,1.3,2.8,0.6,1.5,3` (+ o trailer de abertura)\n📺 **Texto na tela:** `olha esse detalhe ✨` (ou o do produto)\n\n---\n✋ **Pras mãos:** são takes curtinhos e leves (soltar, abrir, borrifar, girar). Nada de apertar."}], "legendas": ["🖤 Mule Preto Feminino Sola Tratorada Baixa Confortável Elegante Calça Facil Maricotta #lookfeminino #roupafeminina #mule #mulefeminino #sapatofeminino", "🤍 Mule Feminino Sola Tratorada Baixa Confortável Elegante Calça Fácil Maricotta #lookfeminino #roupafeminina #mule #mulefeminino #sapatofeminino"], "nota": ""}, {"id": "splash", "emoji": "🌸", "nome": "Body splash (plano B)", "pasta": "body splash", "cards": [{"id": "splash-cortes-no-ritmo-fundo-infinito-preto", "titulo": "⚡ Cortes no ritmo · fundo infinito PRETO", "sub": "", "formato": "cortes", "md": "| # | take (~5 s cada) | luz atrás | ⏱️ no vídeo |\n|---|---|---|---|\n| 1 | O frasco **parado no centro**, com o contorno brilhando | rosa | 2,0 s |\n| 2 | A mão **tira a tampa** | azul | 1,7 s |\n| 3 | **Borrifo contra a luz**, e a névoa aparece ✨ | rosa | 4,0 s 🐢 |\n| 4 | **Close no líquido**, com o frasco inclinadinho | âmbar | 0,8 s ⚡ |\n| 5 | **Outro borrifo**, com outra cor | lilás | 2,5 s |\n| 6 | O frasco **girando devagar** na mão | branca | 2,4 s |\n| 7 | **Gotinhas no dorso da mão**, em close | verde-água | 1,3 s ⚡ |\n| 8 | **Final:** o frasco de pé, com a névoa no ar | a cor do frasco | 3,0 s |\n\n✂️ Ritmo pra mim: `2,1.7,4,0.8,2.5,2.4,1.3,3` (+ o trailer de abertura)\n📺 **Texto na tela:** `o cheirinho que todo mundo pergunta 🌸`\n📝 **Legenda:** ⏳ falta o nome do anúncio do splash escolhido.\n\n---"}], "legendas": [], "nota": ""}], "atualizado": "07/10/2026"};
+const ENFEITE = e => "˚₊‧ ୨୧ " + e + " ୨୧ ‧₊˚";
+let estado = {}; try { estado = JSON.parse(localStorage.getItem("posts-estado") || "{}"); } catch (e) {}
+let aba = "gravar", fmt = "todos";
+try { aba = localStorage.getItem("posts-aba") || aba; fmt = localStorage.getItem("posts-fmt") || fmt; } catch (e) {}
+const abertos = new Set();
+function salvar() { try { localStorage.setItem("posts-estado", JSON.stringify(estado)); } catch (e) {} }
+function st(id) { return estado[id] || {}; }
+let timer;
+function avisar(m) { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(timer); timer = setTimeout(() => t.classList.remove("on"), 1500); }
+function copiar(txt) {
+  const antigo = () => { const t = document.createElement("textarea"); t.value = txt; t.style.position = "fixed"; t.style.opacity = "0"; document.body.appendChild(t); t.select(); t.setSelectionRange(0, txt.length); const ok = document.execCommand("copy"); t.remove(); if (!ok) throw 0; };
+  const fim = () => avisar("Copiado ✅");
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(fim).catch(() => { try { antigo(); fim(); } catch (e) { avisar("Não consegui copiar 😕"); } });
+  else { try { antigo(); fim(); } catch (e) { avisar("Não consegui copiar 😕"); } }
+}
+function md(t) { return window.marked ? marked.parse(t) : "<pre style='white-space:pre-wrap'>" + t.replace(/</g, "&lt;") + "</pre>"; }
+function todos() { return DADOS.produtos.flatMap(p => p.cards); }
+function passa(c) {
+  const s = st(c.id);
+  if (fmt !== "todos" && c.formato !== fmt) return false;
+  if (aba === "gravar") return !s.g;
+  if (aba === "estoque") return s.g && !s.p;
+  if (aba === "postados") return !!s.p;
+  return true;
+}
+function chips(el, lista, atual, set) {
+  el.innerHTML = "";
+  lista.forEach(([v, nome]) => { const b = document.createElement("button"); b.className = "chip"; b.textContent = nome; b.setAttribute("aria-pressed", String(v === atual)); b.onclick = () => set(v); el.appendChild(b); });
+}
+function desenhar() {
+  const cs = todos(), est = cs.filter(c => st(c.id).g && !st(c.id).p).length, gr = cs.filter(c => st(c.id).g).length, po = cs.filter(c => st(c.id).p).length;
+  document.getElementById("resumo").innerHTML = `<span class="pill">📦 Estoque: <b>${est}</b></span><span class="pill">🎥 Gravados: <b>${gr}</b>/${cs.length}</span><span class="pill">✅ Postados: <b>${po}</b></span>`;
+  chips(document.getElementById("abas"), [["gravar", "🎥 Pra gravar"], ["estoque", "📦 Estoque"], ["postados", "✅ Postados"], ["todos", "Todos"]], aba, v => { aba = v; try { localStorage.setItem("posts-aba", v); } catch (e) {} desenhar(); });
+  chips(document.getElementById("formatos"), [["todos", "Todos os formatos"], ["cortes", "⚡ Cortes (sábado)"], ["asmr", "🕯️ ASMR (domingo)"]], fmt, v => { fmt = v; try { localStorage.setItem("posts-fmt", v); } catch (e) {} desenhar(); });
+  const L = document.getElementById("lista"); L.innerHTML = "";
+  const info = document.createElement("details"); info.className = "info";
+  info.innerHTML = "<summary>📖 Como gravar e me mandar os takes</summary>" + md(DADOS.info); L.appendChild(info);
+  let total = 0;
+  DADOS.produtos.forEach(p => {
+    const cs = p.cards.filter(passa); if (!cs.length) return; total += cs.length;
+    const h = document.createElement("h2"); h.innerHTML = `${p.emoji} ${p.nome} <small>${cs.length}</small>`; L.appendChild(h);
+    if (p.nota && aba === "gravar") { const n = document.createElement("div"); n.className = "nota"; n.innerHTML = md(p.nota); L.appendChild(n); }
+    const lg = document.createElement("div"); lg.className = "legendas";
+    const add = (txt, rot) => { const b = document.createElement("button"); b.className = "copia"; b.textContent = rot ? rot + "\n" + txt : txt; b.onclick = () => copiar(txt); lg.appendChild(b); };
+    if (p.legendas.length) p.legendas.forEach(l => add(l, "Legenda:")); else { const n = document.createElement("div"); n.className = "nota"; n.textContent = "📝 Legenda: ⏳ falta o nome do anúncio"; lg.appendChild(n); }
+    add(ENFEITE(p.emoji), "Enfeite:"); L.appendChild(lg);
+    cs.forEach(c => L.appendChild(cartao(p, c)));
+  });
+  if (!total) L.insertAdjacentHTML("beforeend", `<p class="vazio">${aba === "estoque" ? "Estoque vazio — hora de gravar! 🎥" : aba === "postados" ? "Nenhum postado ainda 💛" : "Tudo gravado por aqui! 🎉"}</p>`);
+  const f = document.createElement("footer");
+  f.innerHTML = `Atualizado em ${DADOS.atualizado}<br>`;
+  const bk = document.createElement("button"); bk.textContent = "📋 Copiar backup"; bk.onclick = () => copiar(JSON.stringify(estado));
+  const rs = document.createElement("button"); rs.textContent = "↩️ Restaurar backup";
+  rs.onclick = () => { const t = prompt("Cole aqui o backup:"); if (!t) return; try { estado = Object.assign(estado, JSON.parse(t)); salvar(); desenhar(); avisar("Backup restaurado ✅"); } catch (e) { avisar("Backup inválido 😕"); } };
+  f.appendChild(bk); f.appendChild(rs); L.appendChild(f);
+}
+function cartao(p, c) {
+  const s = st(c.id), d = document.createElement("div");
+  d.className = "card" + (s.g ? " gravado" : "") + (s.p ? " postado" : "") + (abertos.has(c.id) ? " aberto" : "");
+  const topo = document.createElement("div"); topo.className = "topo";
+  topo.innerHTML = `<span class="t"></span><span class="seta">›</span>`;
+  topo.querySelector(".t").textContent = c.titulo;
+  if (c.sub) { const sub = document.createElement("span"); sub.className = "s"; sub.textContent = c.sub; topo.querySelector(".t").appendChild(sub); }
+  topo.onclick = () => { abertos.has(c.id) ? abertos.delete(c.id) : abertos.add(c.id); d.classList.toggle("aberto"); };
+  const bt = document.createElement("div"); bt.className = "botoes";
+  const bg = document.createElement("button"); bg.className = "g" + (s.g ? " on" : ""); bg.textContent = s.g ? "🎥 Gravado ✓" : "🎥 Gravei";
+  const bp = document.createElement("button"); bp.className = "p" + (s.p ? " on" : ""); bp.textContent = s.p ? "✅ Postado ✓" : "✅ Postei";
+  bg.onclick = () => { const e = estado[c.id] = st(c.id); if (e.g) { delete e.g; delete e.p; } else e.g = new Date().toISOString().slice(0, 10); salvar(); desenhar(); avisar(e.g ? "Foi pro estoque 📦" : "Desmarcado"); };
+  bp.onclick = () => { const e = estado[c.id] = st(c.id); if (e.p) delete e.p; else { e.p = new Date().toISOString().slice(0, 10); e.g = e.g || e.p; } salvar(); desenhar(); avisar(e.p ? "Postado ✅ 🎉" : "Desmarcado"); };
+  bt.appendChild(bg); bt.appendChild(bp);
+  const ct = document.createElement("div"); ct.className = "conteudo"; ct.innerHTML = md(c.md);
+  ct.querySelectorAll("code").forEach(k => k.onclick = e => { e.stopPropagation(); copiar(k.textContent); });
+  if (c.formato === "cortes") ct.insertAdjacentHTML("beforeend", `<div class="montar">✂️ Salve os takes em <b>MONTAR / ${p.pasta}</b> e me fale <b>"monta ${p.pasta}"</b>.</div>`);
+  d.appendChild(topo); d.appendChild(bt); d.appendChild(ct);
+  return d;
+}
+desenhar();
+</script>
+</body>
+</html>
